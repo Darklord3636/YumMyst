@@ -1,0 +1,38 @@
+# Dependency Directories (Paket qovluqları)
+node_modules/
+.pnpm-store/
+.pnpm-debug.log*
+
+# Production / Build çıxışları (Frontend-in deploy faylları)
+dist/
+build/
+.cache/
+
+# Ətraf mühit dəyişənləri və Şifrələr
+.env
+.env.local
+.env.*.local
+backend/.env
+
+# Mac və Windows-un sistem faylları
+.DS_Store
+.DS_Store?
+ehthumbs.db
+Thumbs.db
+
+# Logs (Xəta hesabatları)
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Redaktor və IDE sazlamaları (VS Code, WebStorm və s.)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
