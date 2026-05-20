@@ -1,5 +1,5 @@
 ```markdown
-# 🍏 YumMyst — Full-Stack Eco-Friendly Food Delivery Prototype
+# YumMyst — Full-Stack Eco-Friendly Food Delivery Prototype
 
 YumMyst, Bakı şəhərindəki kafelərdə günün sonunda qalan təzə və keyfiyyətli təamları yarı qiymətinə istehlakçılara təqdim edərək qida israfının (Food Waste) qarşısını almağı hədəfləyən, interaktiv və müasir bir **Full-Stack** mobil-veb tətbiq prototipidir. Layihə monorepo strukturunda yığılmışdır və real vaxt rejimində bulud sistemləri ilə inteqrasiya olunub.
 
@@ -81,7 +81,7 @@ pnpm run dev
 
 ---
 
-## 💡 Əsas Funksional İmkanlar
+## Əsas Funksional İmkanlar
 
 * **Dinamik Data Axışı:** Kafelər local yaddaşdan deyil, birbaşa buluddakı MongoDB-dən çəkilərək anlıq ekranda render olunur.
 * **Dinamik QR Generasiyası:** "Əldə et" düyməsinə kliklədikdə backend hər məhsulun özünəməxsus ID-sinə uyğun xüsusi `qrendirim://product/:id` linki hazırlayır və bunu saniyələr içində canlı QR koda çevirib modal pəncərədə təqdim edir.
