@@ -3,7 +3,7 @@ import { MapPin, Gift, Search, Map, User, Star, Clock, Flame, X, QrCode } from "
 import { motion, AnimatePresence } from "motion/react";
 import { useState, useEffect } from "react";
 
-// 1. TypeScript üçün verilənlər bazasından (MongoDB) gələcək obyektlərin strukturunu təyin edirik
+// 1. TypeScript üçün verilənlər bazasından (MongoDB Atlas) gələn obyektlərin strukturu
 interface MenuItem {
   _id: string;
   name: string;
@@ -18,7 +18,7 @@ interface Restaurant {
   _id: string;
   name: string;
   location: string;
-  discountTag: string; // Məsələn: "-50% FRESH MEAL"
+  discountTag: string; 
   menu: MenuItem[];
   rating?: number;
   image?: string;
@@ -30,11 +30,14 @@ export function Home() {
   const navigate = useNavigate();
   const [bonusPoints] = useState(245);
 
-  // 2. Bazadan gələn kafeləri və yüklənmə statusunu yadda saxlayacaq dövlət (state) qutuları
+  // Canlı Render Backend API Ünvanı
+  const BACKEND_API_URL = "https://yummyst-backend.onrender.com";
+
+  // Bazadan gələn kafeləri və yüklənmə statusunu yadda saxlayacaq state-lər
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // 🌟 QR Modal-ın vəziyyətini və seçilmiş məhsulu idarə etmək üçün əlavə etdiyimiz state-lər
+  // QR Modal-ın vəziyyətini və seçilmiş məhsulu idarə edən state-lər
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [qrLoading, setQrLoading] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<{
@@ -44,9 +47,9 @@ export function Home() {
     qrCodeUrl: string;
   } | null>(null);
 
-  // 3. Səhifə ilk dəfə brauzerdə açılanda Node.js Express backendimizə sorğu göndəririk
+  // Səhifə açılanda Render-dəki canlı Express backendimizə sorğu göndəririk
   useEffect(() => {
-    fetch('http://localhost:5001/api/cafes')
+    fetch(`${BACKEND_API_URL}/api/cafes`)
       .then((res) => res.json())
       .then((data) => {
         const enrichedData = data.map((item: any, index: number) => ({
@@ -69,7 +72,7 @@ export function Home() {
       });
   }, []);
 
-  // 🌟 "Əldə et" düyməsinə basıldıqda işə düşən və backend-dən QR kodu gətirən funksiya
+  // "Əldə et" düyməsinə basıldıqda işə düşən və canlı backend-dən QR kodu gətirən funksiya
   const handleGetQrCode = async (e: React.MouseEvent, cafeName: string, item: MenuItem) => {
     e.stopPropagation(); // Kartın özünə kliklənmə funksiyasının (navigate) işləməsini bloklayır
     setQrLoading(true);
@@ -82,8 +85,8 @@ export function Home() {
     setIsModalOpen(true);
 
     try {
-      // Sənin server.cjs backendindəki dinamik QR kod marşrutuna müraciət edirik
-      const res = await fetch(`http://localhost:5001/api/generate-qr/${item._id}`);
+      // Render üzərindəki dinamik QR kod marşrutuna müraciət edirik
+      const res = await fetch(`${BACKEND_API_URL}/api/generate-qr/${item._id}`);
       const data = await res.json();
       setSelectedProduct(prev => prev ? { ...prev, qrCodeUrl: data.qrCode } : null);
     } catch (err) {
@@ -106,7 +109,6 @@ export function Home() {
     );
   }
 
-  // Yardımçı filtrlər (Dizayndakı bölmələr üçün kafeləri süzgəcdən keçiririk)
   const mysteryBoxes = restaurants.filter(r => r.menu && r.menu.some(item => item.isMystery));
   const regularMeals = restaurants.filter(r => r.menu && r.menu.some(item => !item.isMystery));
 
@@ -186,7 +188,7 @@ export function Home() {
         </div>
       </div>
 
-      {/* 4. AVAILABLE NOW BÖLMƏSİ */}
+      {/* AVAILABLE NOW BÖLMƏSİ */}
       <div className="px-6 mt-8">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 bg-gradient-to-br from-accent to-[#FFB84D] rounded-2xl flex items-center justify-center shadow-lg">
@@ -207,7 +209,6 @@ export function Home() {
               onClick={() => navigate(`/restaurant/${restaurant._id}`)}
               className="group bg-card rounded-[2rem] shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 cursor-pointer border border-border/50 p-5"
             >
-              {/* Üst Şəkil və Məlumat Səthi */}
               <div className="relative h-48 overflow-hidden rounded-2xl mb-4">
                 <img
                   src={restaurant.image}
@@ -223,12 +224,10 @@ export function Home() {
                 </div>
               </div>
 
-              {/* Kafe Başlığı və Detalları */}
               <div className="mb-4">
                 <h3 className="text-xl font-bold mb-1">{restaurant.name}</h3>
                 <p className="text-xs text-muted-foreground mb-3 flex items-center gap-1">📍 {restaurant.location}</p>
                 
-                {/* 🌟 Məhsulların Siyahısı və "Əldə et" Düymələri */}
                 <div className="space-y-2 mt-2">
                   {restaurant.menu.map((item) => (
                     <div key={item._id} className="flex justify-between items-center bg-secondary/30 p-3 rounded-xl border border-border/40 hover:bg-secondary/50 transition">
@@ -261,7 +260,7 @@ export function Home() {
         </div>
       </div>
 
-      {/* 5. MYSTERY BOXES BÖLMƏSİ */}
+      {/* MYSTERY BOXES BÖLMƏSİ */}
       <div className="px-6 mt-10">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 bg-gradient-to-br from-primary to-[#3D7A56] rounded-2xl flex items-center justify-center shadow-lg">
@@ -316,7 +315,7 @@ export function Home() {
         </div>
       </div>
 
-      {/* 6. CHOOSE YOUR MEAL BÖLMƏSİ */}
+      {/* CHOOSE YOUR MEAL BÖLMƏSİ */}
       <div className="px-6 mt-10">
         <div className="flex items-center gap-3 mb-5">
           <div className="w-12 h-12 bg-gradient-to-br from-[#8BC9A8] to-primary rounded-2xl flex items-center justify-center shadow-lg">
@@ -372,11 +371,10 @@ export function Home() {
         </div>
       </div>
 
-      {/* ── 🌟 FRAMER MOTION İLƏ ZƏRIF VƏ DİNAMİK QR KOD MODAL PANELI ── */}
+      {/* QR KOD MODAL PANELI */}
       <AnimatePresence>
         {isModalOpen && selectedProduct && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-5">
-            {/* Modal Arxa Fon Qaraltısı */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -385,7 +383,6 @@ export function Home() {
               className="absolute inset-0 bg-black/60 backdrop-blur-sm"
             />
 
-            {/* Modal Kartının Özü */}
             <motion.div 
               initial={{ scale: 0.9, opacity: 0, y: 20 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -393,7 +390,6 @@ export function Home() {
               transition={{ type: "spring", duration: 0.5 }}
               className="relative bg-card rounded-[2.5rem] w-full max-w-sm overflow-hidden shadow-2xl border border-border p-6 text-center z-10"
             >
-              {/* Bağlamaq Düyməsi */}
               <button 
                 onClick={() => setIsModalOpen(false)}
                 className="absolute top-4 right-4 text-muted-foreground hover:text-foreground bg-secondary w-8 h-8 rounded-full flex items-center justify-center transition"
@@ -401,7 +397,6 @@ export function Home() {
                 <X className="w-4 h-4" />
               </button>
 
-              {/* Modal Başlığı */}
               <div className="w-12 h-12 bg-primary/10 text-primary rounded-2xl flex items-center justify-center mx-auto mb-3">
                 <QrCode className="w-6 h-6" />
               </div>
@@ -410,7 +405,6 @@ export function Home() {
                 Bu QR kodu restorandakı kassirə göstərərək endirimli məhsulunuzu təhvil alın.
               </p>
 
-              {/* Məhsul Detalları Səthi */}
               <div className="bg-secondary/40 border border-border/60 rounded-2xl p-4 mb-5 text-left">
                 <p className="text-[10px] text-primary font-bold uppercase tracking-wider mb-0.5">{selectedProduct.cafeName}</p>
                 <h4 className="font-bold text-foreground text-base line-clamp-1">{selectedProduct.productName}</h4>
@@ -420,7 +414,6 @@ export function Home() {
                 </div>
               </div>
 
-              {/* QR Kod Şəklinin Sahəsi */}
               <div className="bg-white rounded-2xl p-4 inline-block border border-border shadow-inner mb-4 relative min-w-[180px] min-h-[180px]">
                 {qrLoading ? (
                   <div className="absolute inset-0 flex flex-col items-center justify-center bg-white/90 rounded-2xl">
@@ -444,7 +437,6 @@ export function Home() {
                 )}
               </div>
 
-              {/* Kassir üçün Göstəriş */}
               <div className="flex items-center justify-center gap-2 text-xs text-amber-600 bg-amber-500/10 dark:bg-amber-500/20 rounded-xl py-2.5 px-3 font-semibold border border-amber-500/20">
                 <span>⚡️</span>
                 <span>Kassir üçün: QR kodu skan edin.</span>

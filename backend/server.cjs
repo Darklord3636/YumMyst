@@ -1,6 +1,5 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const path = require('path');
 const QRCode = require('qrcode');
 
 const app = express();
@@ -18,13 +17,17 @@ app.use((req, res, next) => {
 
 app.use(express.json());
 
-// Statik faylları (index.html və s.) birbaşa kök qovluqdan oxuyur
-app.use(express.static(path.join(__dirname)));
+// Ana səhifəyə (root) sorğu gələndə index.html axtarmaq əvəzinə API statusunu göstərir (ENOENT xətasının həlli)
+app.get('/', (req, res) => {
+    res.send("YumMyst Backend API status: RUNNING 🚀");
+});
 
-// MongoDB-yə qoşulma
-mongoose.connect('mongodb+srv://omer:omer_mongodb36@cluster0.zhhdrju.mongodb.net/?appName=Cluster0/yummyst?retryWrites=true&w=majority')
+// MongoDB-yə bulud üzərindən qoşulma linki
+const mongoURI = 'mongodb+srv://omer:omer_mongodb36@cluster0.zhhdrju.mongodb.net/yummyst?retryWrites=true&w=majority';
+
+mongoose.connect(mongoURI)
     .then(() => {
-        console.log('Lokal MongoDB-yə uğurla qoşuldu. 🌱');
+        console.log('MongoDB Atlas bulud bazasına uğurla qoşuldu. 🌱');
         seedDatabase();
     })
     .catch(err => console.error('MongoDB qoşulma xətası:', err));
@@ -102,13 +105,8 @@ async function seedDatabase() {
     }
 }
 
-// Express 5 RegExp Catch-all Uyğunluğu: /api marşrutlarına toxunmur, qalan hər şeyi index.html-ə yönləndirir
-app.get(/^(?!\/api).*$/, (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Port sazlanması
-const PORT = 5001;
+// Portun Render və Local mühitə uyğun dinamik qəbul edilməsi
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
     console.log(`Server ${PORT} portunda aktivdir. 🚀`);
 });
