@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
 // MongoDB-yə qoşulma
-mongoose.connect('mongodb://127.0.0.1:27017/qrendirim')
+mongoose.connect('mongodb+srv://omer:omer_mongodb36@cluster0.zhhdrju.mongodb.net/?appName=Cluster0/yummyst?retryWrites=true&w=majority')
     .then(() => {
         console.log('Lokal MongoDB-yə uğurla qoşuldu. 🌱');
         seedDatabase();
